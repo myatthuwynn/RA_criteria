@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACR/EULAR 2010 RA Criteria Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-item label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-item input,
+        .form-item select {
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-item input:focus,
+        .form-item select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .score-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .score-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #ddd;
+        }
+
+        .score-box label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .score-box .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .total-score-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 8px;
+            border: 3px solid #667eea;
+            text-align: center;
+        }
+
+        .total-score-container h3 {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .total-score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .diagnosis-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #ddd;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .diagnosis-box.definite {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+
+        .diagnosis-box.not-definite {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+
+        .diagnosis-box.recheck {
+            background: #e2e3e5;
+            border-left-color: #6c757d;
+            color: #383d41;
+        }
+
+        .diagnosis-box strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .action-plan {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e7f3ff;
+            border-left: 5px solid #0066cc;
+            border-radius: 6px;
+            color: #004085;
+        }
+
+        .action-plan h4 {
+            margin-bottom: 10px;
+            color: #0066cc;
+        }
+
+        .action-plan ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .action-plan li {
+            margin-bottom: 8px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .reference-table {
+            margin-top: 20px;
+            font-size: 13px;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .reference-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .reference-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .reference-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .reference-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .criteria-explanation {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .print-button {
+            background: #28a745;
+            color: white;
+        }
+
+        .print-button:hover {
+            background: #218838;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .button-group {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        .warning {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .score-display {
+                grid-template-columns: 1fr 1fr;
+            }
+            .form-group {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="header">
+        <h1>🔍 ACR/EULAR 2010 RA Classification Criteria</h1>
+        <p>Score ≥6 = DEFINITE RHEUMATOID ARTHRITIS</p>
+    </div>
+
+    <div class="content">
+
+        <!-- PATIENT INFO -->
+        <div class="section">
+            <h2><span class="section-icon">👤</span>Patient Information</h2>
+            <div class="form-group">
+                <div class="form-item">
+                    <label>Patient Name</label>
+                    <input type="text" id="patientName" placeholder="Enter patient name">
+                </div>
+                <div class="form-item">
+                    <label>Age / Sex</label>
+                    <input type="text" id="ageGender" placeholder="e.g., 45 F">
+                </div>
+                <div class="form-item">
+                    <label>Date</label>
+                    <input type="date" id="assessmentDate">
+                </div>
+                <div class="form-item">
+                    <label>Provider</label>
+                    <input type="text" id="provider" placeholder="Your name">
+                </div>
+            </div>
+        </div>
+
+        <!-- JOINT INVOLVEMENT -->
+        <div class="section">
+            <h2><span class="section-icon">🦴</span>1. Joint Involvement</h2>
+            <div class="form-item">
+                <label>Select Joint Involvement Category</label>
+                <select id="jointInvolvement" onchange="calculateScore()">
+                    <option value="">-- Select --</option>
+                    <option value="0">1 medium-large joint (0 points)</option>
+                    <option value="1">2-10 medium-large joints (1 point)</option>
+                    <option value="2">1-3 small joints (2 points)</option>
+                    <option value="3">4-10 small joints (3 points)</option>
+                    <option value="5">≥11 joints with ≥1 small joint (5 points)</option>
+                </select>
+                <p class="criteria-explanation">Small joints: PIP, MCP, wrist (bilaterally). Count any involved joint (tender or swollen).</p>
+            </div>
+        </div>
+
+        <!-- SEROLOGY -->
+        <div class="section">
+            <h2><span class="section-icon">🧬</span>2. Serology (RF and Anti-CCP)</h2>
+            <div class="form-group">
+                <div class="form-item">
+                    <label>Rheumatoid Factor (RF)</label>
+                    <select id="rf" onchange="calculateScore()">
+                        <option value="">-- Select --</option>
+                        <option value="0">Negative (0 points)</option>
+                        <option value="2">Low-positive, 1-3x ULN (2 points)</option>
+                        <option value="3">High-positive, >3x ULN (3 points)</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>Anti-CCP Antibody</label>
+                    <select id="antiCCP" onchange="calculateScore()">
+                        <option value="">-- Select --</option>
+                        <option value="0">Negative (0 points)</option>
+                        <option value="2">Low-positive, 1-3x ULN (2 points)</option>
+                        <option value="3">High-positive, >3x ULN (3 points)</option>
+                    </select>
+                </div>
+            </div>
+            <p class="criteria-explanation"><strong>Rule:</strong> Use the HIGHEST value from RF and Anti-CCP. If only one is positive, use that value.</p>
+        </div>
+
+        <!-- ACUTE PHASE REACTANTS -->
+        <div class="section">
+            <h2><span class="section-icon">⚗️</span>3. Acute Phase Reactants</h2>
+            <div class="form-group">
+                <div class="form-item">
+                    <label>ESR (mm/hr)</label>
+                    <input type="number" id="esr" placeholder="Normal: <20" onchange="calculateScore()" oninput="calculateScore()">
+                </div>
+                <div class="form-item">
+                    <label>CRP (mg/L)</label>
+                    <input type="number" id="crp" placeholder="Normal: <10" onchange="calculateScore()" oninput="calculateScore()">
+                </div>
+            </div>
+            <p class="criteria-explanation">If EITHER ESR OR CRP is abnormal = 1 point. Normal values: ESR <20 mm/hr, CRP <10 mg/L</p>
+        </div>
+
+        <!-- SYMPTOM DURATION -->
+        <div class="section">
+            <h2><span class="section-icon">⏱️</span>4. Symptom Duration</h2>
+            <div class="form-item">
+                <label>Duration of Symptoms</label>
+                <select id="duration" onchange="calculateScore()">
+                    <option value="">-- Select --</option>
+                    <option value="0"><6 weeks (0 points)</option>
+                    <option value="1">≥6 weeks (1 point)</option>
+                </select>
+            </div>
+            <p class="criteria-explanation">Score can be applied at first visit. Symptoms must be ≥6 weeks for disease-modifying therapy.</p>
+        </div>
+
+        <!-- SCORING DISPLAY -->
+        <div class="total-score-container">
+            <h3>TOTAL ACR/EULAR SCORE</h3>
+            <div class="score-display">
+                <div class="score-box">
+                    <label>Joint Involvement</label>
+                    <div class="value" id="scoreJoint">0</div>
+                </div>
+                <div class="score-box">
+                    <label>Serology</label>
+                    <div class="value" id="scoreSerology">0</div>
+                </div>
+                <div class="score-box">
+                    <label>APR</label>
+                    <div class="value" id="scoreAPR">0</div>
+                </div>
+                <div class="score-box">
+                    <label>Duration</label>
+                    <div class="value" id="scoreDuration">0</div>
+                </div>
+            </div>
+            <div class="total-score" id="totalScore">0 / 10</div>
+        </div>
+
+        <!-- DIAGNOSIS INTERPRETATION -->
+        <div id="diagnosisResult"></div>
+
+        <!-- ACTION PLAN -->
+        <div id="actionPlanResult"></div>
+
+        <!-- REFERENCE TABLE -->
+        <div class="section">
+            <h2><span class="section-icon">📋</span>Quick Reference Table</h2>
+            <div class="reference-table">
+                <table>
+                    <tr>
+                        <th>Criterion</th>
+                        <th>Finding</th>
+                        <th>Points</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Joint Involvement</strong></td>
+                        <td>1 med-large</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>2-10 med-large</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>1-3 small</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>4-10 small</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>≥11 with small</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF or Anti-CCP</strong></td>
+                        <td>Negative</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>Low-positive</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>High-positive</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td><strong>APR</strong></td>
+                        <td>Both normal</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>Either abnormal</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Duration</strong></td>
+                        <td><6 weeks</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>≥6 weeks</td>
+                        <td>1</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="button-group">
+            <button class="btn-primary print-button" onclick="printPage()">🖨️ Print Report</button>
+            <button class="btn-secondary" onclick="resetForm()">🔄 Reset Form</button>
+            <button class="btn-secondary" onclick="clearData()">🗑️ Clear All</button>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p><strong>ACR/EULAR 2010 Classification Criteria for Rheumatoid Arthritis</strong></p>
+        <p>Aletaha D, et al. Ann Rheum Dis. 2010;69:1580-8 | <strong>Score ≥6 = Definite RA</strong></p>
+        <p>⚠️ This tool is for clinical decision support only. Clinical judgment and specialist consultation are essential.</p>
+        <p>GitHub: <a href="https://github.com/yourusername/ra-criteria-calculator" style="color: #667eea; text-decoration: none;">ACR/EULAR RA Calculator</a></p>
+    </div>
+
+</div>
+
+<script>
+    // Set today's date
+    document.getElementById('assessmentDate').valueAsDate = new Date();
+
+    function calculateScore() {
+        // Get values
+        const joint = parseInt(document.getElementById('jointInvolvement').value) || 0;
+        const rf = parseInt(document.getElementById('rf').value) || 0;
+        const antiCCP = parseInt(document.getElementById('antiCCP').value) || 0;
+        const duration = parseInt(document.getElementById('duration').value) || 0;
+        
+        // APR calculation
+        const esr = parseFloat(document.getElementById('esr').value) || 0;
+        const crp = parseFloat(document.getElementById('crp').value) || 0;
+        const apr = (esr >= 20 || crp >= 10) ? 1 : 0;
+
+        // Serology - use highest
+        const serology = Math.max(rf, antiCCP);
+
+        // Total score
+        const total = joint + serology + apr + duration;
+
+        // Update display
+        document.getElementById('scoreJoint').textContent = joint;
+        document.getElementById('scoreSerology').textContent = serology;
+        document.getElementById('scoreAPR').textContent = apr;
+        document.getElementById('scoreDuration').textContent = duration;
+        document.getElementById('totalScore').textContent = total + ' / 10';
+
+        // Generate diagnosis
+        generateDiagnosis(total);
+    }
+
+    function generateDiagnosis(score) {
+        let diagnosisHTML = '';
+        let actionHTML = '';
+
+        if (score >= 6) {
+            diagnosisHTML = `
+                <div class="diagnosis-box definite">
+                    <strong>✓ DEFINITE RHEUMATOID ARTHRITIS DIAGNOSIS</strong>
+                    Score ≥6 = Classified as definite RA by ACR/EULAR 2010 criteria.
+                    <br><br>
+                    <span class="warning">Disease-modifying therapy should be initiated IMMEDIATELY.</span>
+                </div>
+            `;
+            actionHTML = `
+                <div class="action-plan">
+                    <h4>🎯 RECOMMENDED MANAGEMENT:</h4>
+                    <ul>
+                        <li><strong>Initiate DMARD:</strong> Start Methotrexate 15-25mg weekly (gold standard)</li>
+                        <li><strong>Pre-treatment labs:</strong> CBC, LFT, Renal function, TB screening (if endemic)</li>
+                        <li><strong>Immediate referral:</strong> Rheumatology consultation (even if already treating)</li>
+                        <li><strong>Acute symptom control:</strong> NSAIDs (Naproxen 500mg BD) if no contraindications</li>
+                        <li><strong>Functional assessment:</strong> Baseline HAQ score</li>
+                        <li><strong>Baseline imaging:</strong> Hand/foot X-rays (for erosion assessment)</li>
+                        <li><strong>Follow-up:</strong> Assess at 4 weeks for toxicity, 12 weeks for response</li>
+                        <li><strong>Target:</strong> Remission (CDAI ≤2.8) within 3-6 months</li>
+                    </ul>
+                </div>
+            `;
+        } else if (score >= 4 && score < 6) {
+            diagnosisHTML = `
+                <div class="diagnosis-box not-definite">
+                    <strong>⚠️ NOT DEFINITE RA (Score ${score})</strong>
+                    Score <6 = Not classified as definite RA by ACR/EULAR criteria.
+                    <br><br>
+                    However: Early RA or seronegative RA may still be present.
+                </div>
+            `;
+            actionHTML = `
+                <div class="action-plan">
+                    <h4>🎯 MANAGEMENT OPTIONS:</h4>
+                    <ul>
+                        <li><strong>Consider seronegative RA:</strong> Even if RF/Anti-CCP negative, clinical features matter</li>
+                        <li><strong>Retest in 4-6 weeks:</strong> For seroconversion (RF/Anti-CCP becoming positive)</li>
+                        <li><strong>Monitor clinically:</strong> Watch for progression of joint symptoms</li>
+                        <li><strong>NSAIDs:</strong> Naproxen 500mg BD if inflamed (check renal function)</li>
+                        <li><strong>Repeat serology:</strong> If clinical suspicion remains high</li>
+                        <li><strong>Consider rheumatology referral:</strong> If high clinical suspicion despite <6 score</li>
+                        <li><strong>Assess other diagnoses:</strong> Gout? SLE? Psoriatic arthritis? Spondyloarthropathy?</li>
+                    </ul>
+                </div>
+            `;
+        } else {
+            diagnosisHTML = `
+                <div class="diagnosis-box recheck">
+                    <strong>○ NOT DEFINITE RA (Score ${score})</strong>
+                    Score <6 = Does not meet ACR/EULAR 2010 classification criteria for RA.
+                    <br><br>
+                    Consider alternative diagnoses based on clinical presentation.
+                </div>
+            `;
+            actionHTML = `
+                <div class="action-plan">
+                    <h4>🎯 NEXT STEPS:</h4>
+                    <ul>
+                        <li><strong>Rule out other diagnoses:</strong> Gout (UA level?), OA (imaging?), Infection (fever?)</li>
+                        <li><strong>SLE screening:</strong> If ANA positive and rash/systemic symptoms</li>
+                        <li><strong>Spondyloarthropathy:</strong> If axial symptoms + HLA-B27</li>
+                        <li><strong>Mechanical joint pain:</strong> If large joints + no inflammatory markers</li>
+                        <li><strong>Conservative treatment:</strong> NSAIDs, physio, weight loss as appropriate</li>
+                        <li><strong>Recheck if worsening:</strong> Repeat labs and serology in 6-8 weeks</li>
+                        <li><strong>Do NOT start DMARD:</strong> Unless diagnosis confirmed and high clinical suspicion</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        document.getElementById('diagnosisResult').innerHTML = diagnosisHTML;
+        document.getElementById('actionPlanResult').innerHTML = actionHTML;
+    }
+
+    function printPage() {
+        window.print();
+    }
+
+    function resetForm() {
+        document.getElementById('jointInvolvement').value = '';
+        document.getElementById('rf').value = '';
+        document.getElementById('antiCCP').value = '';
+        document.getElementById('esr').value = '';
+        document.getElementById('crp').value = '';
+        document.getElementById('duration').value = '';
+        calculateScore();
+    }
+
+    function clearData() {
+        document.getElementById('patientName').value = '';
+        document.getElementById('ageGender').value = '';
+        document.getElementById('provider').value = '';
+        resetForm();
+    }
+
+    // Initialize
+    calculateScore();
+</script>
+
+</body>
+</html>
